@@ -65,4 +65,4 @@ def render(standings_2324, standings_2425):
         (total_points_bar | total_gd_bar)
     ).add_params(selection)
     
-    return q1_visuals # This is the critical change
+    return q1_visuals 
