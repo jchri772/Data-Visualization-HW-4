@@ -110,9 +110,7 @@ def render_q2(standings_2324, standings_2425):
             title=alt.TitleParams(text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average " + years[i] + "'"), fontSize=24)
         )
         attacking_charts.append(combined)
-
-    q2_visuals = alt.vconcat(header_q2, *attacking_charts)
     
-    st.altair_chart(q2_visuals, use_container_width=False)
+    st.altair_chart(attacking_charts, use_container_width=False)
 
 render_q2(standings_2324, standings_2425)
