@@ -179,13 +179,13 @@ def render_q3_drag(full_home_away):
         x=alt.X('Season:N', title="Season"),
         y=alt.Y('mean(CumGF_Home):Q', title="Average Home Goals"),
         color='Season:N'
-    ).properties(width=280, height=400, title='Average Home Goals by Season', anchor = 'middle')
+    ).properties(width=280, height=400, title='Average Home Goals by Season')
 
     bar_away_drag = alt.Chart(full_home_away).mark_bar().transform_filter(brush).encode(
         x=alt.X('Season:N', title="Season"),
         y=alt.Y('mean(CumGF_Away):Q', title="Average Away Goals"),
         color='Season:N'
-    ).properties(width=280, height=400, title='Average Away Goals by Season', anchor = 'middle')
+    ).properties(width=280, height=400, title='Average Away Goals by Season')
 
     st.altair_chart(points_home_advantage_drag & (bar_home_drag | bar_away_drag), use_container_width=False)
 
