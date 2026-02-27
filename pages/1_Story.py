@@ -4,12 +4,17 @@ import altair as alt
 from utils.data_utils import load_data, get_daily_standings, load_home_away_data
 from charts.charts import (render)
 
+PL_2324_data, PL_2425_data = load_data()
+standings_2324 = get_daily_standings(PL_2324_data)
+standings_2425 = get_daily_standings(PL_2425_data)
+
+
 st.header("How does team performance differ between the two seasons?")
 
 st.altair_chart(render(standings_2324, standings_2425), use_container_width=True)
 
 
-def render(standings_2324, standings_2425):
+def render_q1(standings_2324, standings_2425):
     df1 = standings_2324
     df2 = standings_2425
 
