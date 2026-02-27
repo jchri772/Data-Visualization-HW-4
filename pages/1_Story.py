@@ -218,7 +218,7 @@ def render_q3_dropdown(full_home_away):
         opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.1)),
         tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
     ).properties(
-        width=600, height=600,
+        width=900, height=600,
         title=alt.TitleParams(
             text='Linked Home and Away Points By Team and Season',
             fontSize=20, anchor='middle',
@@ -229,13 +229,13 @@ def render_q3_dropdown(full_home_away):
         x=alt.X('Season:N', title="Season"),
         y=alt.Y('mean(CumGF_Home):Q', title="Average Home Goals"),
         color='Season:N'
-    ).properties(width=280, height=400, title='Average Home Goals by Season')
+    ).properties(width=400, height=400, title='Average Home Goals by Season')
 
     bar_away = alt.Chart(full_home_away).mark_bar().transform_filter(selection_drop).encode(
         x=alt.X('Season:N', title="Season"),
         y=alt.Y('mean(CumGF_Away):Q', title="Average Away Goals"),
         color='Season:N'
-    ).properties(width=280, height=400, title='Average Away Goals by Season')
+    ).properties(width=400, height=400, title='Average Away Goals by Season')
 
     st.altair_chart(points_home_advantage_by_team & (bar_home | bar_away), use_container_width=False)
 
