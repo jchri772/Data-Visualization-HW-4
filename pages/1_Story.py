@@ -10,8 +10,6 @@ full_home_away = load_home_away_data()
 
 st.header("How does team performance differ between the two seasons?")
 
-st.altair_chart(render_q1(standings_2324, standings_2425), use_container_width=True)
-
 
 def render(standings_2324, standings_2425):
     df1 = standings_2324
