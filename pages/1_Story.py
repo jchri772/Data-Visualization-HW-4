@@ -67,3 +67,13 @@ def render(standings_2324, standings_2425):
     # ---- Render in Streamlit ----
     st.altair_chart(bump_charts, use_container_width=True)
     st.altair_chart(bars, use_container_width=True)
+
+from utils.data_utils import load_data, get_daily_standings
+
+# 1. Load and process data locally for this page
+PL_2324_data, PL_2425_data = load_data()
+standings_2324 = get_daily_standings(PL_2324_data)
+standings_2425 = get_daily_standings(PL_2425_data)
+
+# 2. Call your render function
+render(standings_2324, standings_2425)

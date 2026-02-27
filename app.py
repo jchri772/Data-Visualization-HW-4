@@ -1,23 +1,36 @@
 import streamlit as st
-import importlib.util
-import sys
 from utils.data_utils import load_data, get_daily_standings
 
-# Import the render function from the numeric filename
-spec = importlib.util.spec_from_file_location("story", "pages/1_Story.py")
-story = importlib.util.module_from_spec(spec)
-sys.modules["story"] = story
-spec.loader.exec_module(story)
+# --- Page Configuration ---
+st.set_page_config(
+    page_title="Premier League Dashboard", 
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-st.set_page_config(page_title="Premier League Dashboard", layout="wide")
-st.title("Premier League Interactive Dashboard")
+# --- App Header ---
+st.title("Premier League Interactive Dashboard: 2023 - 2025")
 
-# 1. Load the raw CSV data
-PL_2324_data, PL_2425_data = load_data()
+st.markdown("""
+### Welcome to the Premier League Analysis Tool
+This dashboard explores team performance, attacking consistency, and home-field advantage across the last two seasons.
 
-# 2. Process the data into standings
-standings_2324 = get_daily_standings(PL_2324_data)
-standings_2425 = get_daily_standings(PL_2425_data)
+**How to navigate:**
+* **Story**: View a guided narrative of team performance comparisons.
+* **Explore**: Interact with raw metrics and specific match-day statistics.
+""")
 
-# 3. Pass the processed data to your story.py logic
-story.render(standings_2324, standings_2425)
+# --- Optional: Global Data Loading ---
+# Loading data here and storing it in session_state allows 1_Story.py 
+# and 2_Explore.py to access it without re-reading CSVs on every click.
+if 'data_loaded' not in st.session_state:
+    with st.spinner("Loading season data..."):
+        # Load raw data using your utility function
+        df_2324, df_2425 = load_data()
+        
+        # Process into daily standings
+        st.session_state['standings_2324'] = get_daily_standings(df_2324)
+        st.session_state['standings_2425'] = get_daily_standings(df_2425)
+        st.session_state['data_loaded'] = True
+
+st.success("Data is ready. Select a page from the sidebar to begin.")
