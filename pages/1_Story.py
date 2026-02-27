@@ -71,21 +71,23 @@ render(standings_2324, standings_2425)
 st.header("How consistent is a team’s attacking performance over time within a season?")
 st.subheader('Directions: Select Attacking Statistic Type At Bottom')
 def render_q2(standings_2324, standings_2425):
-    df1 = standings_2324
-    df2 = standings_2425
-    team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
-
-    dropdown_team_q2 = alt.binding_select(options=team_list, labels=team_list, name='Select Team (Q2): ')
-    selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team_q2, value='Arsenal', name='team_sel_q2')
-
-    attacking_stats = ['GF','Shots For','Shots on Target','Corners']
-    dropdown_stats_type = alt.binding_select(options=attacking_stats, labels=attacking_stats, name='Select Attacking Stat: ')
-    selection_attack_stats = alt.param(value='GF', bind=dropdown_stats_type, name='stat_choice')
+    # ... (Keep your dropdown and selection code the same)
 
     attacking_charts = []
     years = ['2023-2024', '2024-2025']
-    for i, df in enumerate((standings_2324, standings_2425)):
-        base = alt.Chart(df).transform_filter(
+    
+    # Bundle the dataframes so we can iterate through them
+    dataframes = [standings_2324, standings_2425]
+
+    for i, df in enumerate(dataframes):
+        # NEW FIX: Filter the dataframe to only include dates for that specific season
+        # This prevents the 23-24 chart from "knowing" about 2025 dates
+        if i == 0:
+            seasonal_df = df[df['Date'] <= '2024-06-01']
+        else:
+            seasonal_df = df[df['Date'] >= '2024-07-01']
+
+        base = alt.Chart(seasonal_df).transform_filter(
             selection_q2
         ).transform_filter(
             "datum.Pts != null" 
@@ -93,14 +95,14 @@ def render_q2(standings_2324, standings_2425):
             selected_val=f"datum[stat_choice]")
 
         points = base.mark_point(filled=True, size=50).encode(
-            x=alt.X('Date:T', title='Date'),
+            x=alt.X('Date:T', title='Date'), # Remove explicit domain here; let it be automatic
             y=alt.Y('selected_val:Q', title='Selected Attacking Stat'),
             color=alt.Color('Team:N', title='Team'),
             tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')])
 
         line = base.transform_window(
             rolling_avg='mean(selected_val)',
-            frame=[-30, 0]
+            frame=[-7, 0] # Suggestion: Use a smaller frame like 7 for a match-based average
         ).mark_line(interpolate='monotone', size=3).encode(
             x='Date:T',
             y=alt.Y('rolling_avg:Q'),
@@ -109,13 +111,15 @@ def render_q2(standings_2324, standings_2425):
         combined = (line + points).add_params(selection_q2, selection_attack_stats).properties(
             width=600, height=400,
             title=alt.TitleParams(text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average " + years[i] + "'"), fontSize=24, anchor='middle'))
+        
         attacking_charts.append(combined)
     
+    # Resolve scales makes sure the axes don't try to sync up
     q2_visuals = alt.vconcat(*attacking_charts).resolve_scale(
-        x='independent' )
+        x='independent'
+    )
     
     st.altair_chart(q2_visuals, use_container_width=True)
-
 render_q2(standings_2324, standings_2425)
 
 
