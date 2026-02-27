@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-from utils.data_utils import load_data, get_daily_standings
-
+from utils.data_utils import load_data, get_daily_standings, load_home_away_data
 st.header("How does team performance differ between the two seasons?")
 def render(standings_2324, standings_2425):
     df1 = standings_2324
