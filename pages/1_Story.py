@@ -1,62 +1,69 @@
 import streamlit as st
-import altair as alt
 import pandas as pd
-from charts.charts import create_pl_dashboard
+import altair as alt
 
-# --- 1. DATA PROCESSING FUNCTIONS (From your app.py) ---
-def get_daily_standings(df):    
-    cols_to_exclude = ['HTAG', 'HTR', 'HTHG', 'Referee'] 
-    home_df = df.drop(columns=cols_to_exclude).copy().rename(columns={'HomeTeam': 'Team', 'FTHG': 'GF', 'FTAG': 'GA', 'HS': 'Shots For', 'AS': 'Opposition Shots', 'HST': 'Shots on Target', 'AST': 'Opposition Shots on Target', 'HF': 'Fouls', 'AF': 'Opposition Fouls', 'HC': 'Corners', 'AC': 'Corners Against', 'HY': 'Yellow Cards', 'AY': 'Opposition Yellow Cards', 'HR': 'Red Cards', 'AR': 'Opposition Red Cards' })
-    away_df = df.drop(columns=cols_to_exclude).copy().rename(columns={'AwayTeam': 'Team', 'FTAG': 'GF', 'FTHG': 'GA', 'AS': 'Shots For', 'HS': 'Opposition Shots', 'AST': 'Shots on Target', 'HST': 'Opposition Shots on Target', 'AF': 'Fouls', 'HF': 'Opposition Fouls', 'AC': 'Corners', 'HC': 'Corners Against', 'AY': 'Yellow Cards', 'HY': 'Opposition Yellow Cards', 'AR': 'Red Cards', 'HR': 'Opposition Red Cards'})
-    home_df['Pts'], away_df['Pts'] = 0, 0
-    home_df.loc[home_df['FTR'] == 'H', 'Pts'] = 3
-    home_df.loc[home_df['FTR'] == 'D', 'Pts'] = 1
-    away_df.loc[away_df['FTR'] == 'A', 'Pts'] = 3
-    away_df.loc[away_df['FTR'] == 'D', 'Pts'] = 1
-    stats = pd.concat([home_df, away_df]).sort_values('Date')
-    stats['GD'] = stats['GF'] - stats['GA']
-    to_exclude = ['Date', 'Team', 'FTR', 'Div']
-    stat_cols = [c for c in stats.columns if c not in to_exclude and pd.api.types.is_numeric_dtype(stats[c])]
-    cum_cols = [f'Cum{c}' for c in stat_cols]
-    stats[cum_cols] = stats.groupby('Team')[stat_cols].cumsum()
-    grid = pd.MultiIndex.from_product([sorted(stats['Date'].unique()), stats['Team'].unique()], names=['Date', 'Team']).to_frame(index=False)
-    daily = pd.merge(grid, stats[['Date', 'Team'] + stat_cols + cum_cols], on=['Date', 'Team'], how='left')
-    daily[cum_cols] = daily.groupby('Team')[cum_cols].ffill().fillna(0)
-    daily = daily.sort_values(by=['Date', 'CumPts', 'CumGD', 'CumGF'], ascending=[True, False, False, False])
-    daily['Rank'] = daily.groupby('Date').cumcount() + 1
-    return daily.reset_index(drop=True)
 
-def home_away_stats(df):    
-    # ... (Your home_away_stats logic from app.py)
-    # Keeping it short for brevity, but ensure the full code from your app.py is here
-    # It must return results[0], results[1]
-    results = []
-    # [Insert the loop and processing from your app.py here]
-    return results[0], results[1]
+def render(standings_2324, standings_2425):
 
-# --- 2. LOAD & CALCULATE DATA ---
-PL_2324_data = pd.read_csv("PL-season-2324.csv")
-PL_2425_data = pd.read_csv("PL-season-2425.csv")
-PL_2324_data['Date'] = pd.to_datetime(PL_2324_data['Date'], dayfirst=True)
-PL_2425_data['Date'] = pd.to_datetime(PL_2425_data['Date'], dayfirst=True)
+    df1 = standings_2324
+    df2 = standings_2425
 
-# These define the variables the dashboard needs
-standings_2324 = get_daily_standings(PL_2324_data)
-standings_2425 = get_daily_standings(PL_2425_data)
+    st.header("Q1: How does team performance differ between the two seasons?")
 
-h23, a23 = home_away_stats(df_2324)
-h24, a24 = home_away_stats(df_2425)
+    # ---- Streamlit dropdown ----
+    team_list = sorted(set(df1["Team"]) | set(df2["Team"]))
+    team = st.selectbox("Select Team:", team_list, index=team_list.index("Arsenal"))
 
-# Merging logic to create full_home_away
-m23 = pd.merge(h23[h23['Date'] == h23['Date'].max()], a23[a23['Date'] == a23['Date'].max()], on='Team', suffixes=('_Home', '_Away'))
-m24 = pd.merge(h24[h24['Date'] == h24['Date'].max()], a24[a24['Date'] == a24['Date'].max()], on='Team', suffixes=('_Home', '_Away'))
-m23['Season'], m24['Season'] = '23-24', '24-25'
-full_home_away = pd.concat([m23, m24])
+    # ---- Filter dataframes ----
+    df1_team = df1[df1["Team"] == team]
+    df2_team = df2[df2["Team"] == team]
 
-# --- 3. RENDER DASHBOARD ---
-st.set_page_config(layout="wide")
-st.title("Premier League Story: 2023 - 2025")
+    # ---- Line charts ----
+    titles = ["Premier League Table Bump Chart 23-24", "Premier League Table Bump Chart 24-25"]
+    charts = []
 
-# This now works because standings_2324, etc., are defined above
-dashboard = create_pl_dashboard(standings_2324, standings_2425, full_home_away)
-st.altair_chart(dashboard, use_container_width=True)
+    for df, title in zip([df1_team, df2_team], titles):
+        chart = alt.Chart(df).mark_line(point=True).encode(
+            x=alt.X("Date:T", title="Day of the Season"),
+            y=alt.Y("Rank:O", title="League Rank", sort="ascending"),
+            tooltip=[
+                alt.Tooltip("Date:T", title="Match Date"),
+                alt.Tooltip("Team:N", title="Team"),
+                alt.Tooltip("Rank:O", title="Position"),
+                alt.Tooltip("CumPts:Q", title="Total Points"),
+            ],
+        ).properties(
+            width=900,
+            height=400,
+            title=title
+        )
+
+        charts.append(chart)
+
+    bump_charts = alt.vconcat(*charts)
+
+    # ---- Final season comparison bars ----
+    df1_final = df1[df1["Date"] == df1["Date"].max()].copy()
+    df2_final = df2[df2["Date"] == df2["Date"].max()].copy()
+
+    df1_final["Season"] = "2023/2024"
+    df2_final["Season"] = "2024/2025"
+
+    df_by_team_comp = pd.concat([df1_final, df2_final])
+    df_by_team_comp = df_by_team_comp[df_by_team_comp["Team"] == team]
+
+    total_points_bar = alt.Chart(df_by_team_comp).mark_bar().encode(
+        x=alt.X("Season:N", title="Season"),
+        y=alt.Y("CumPts:Q", title="Season Points Total"),
+    ).properties(width=300, height=300, title="Total Points By Season")
+
+    total_gd_bar = alt.Chart(df_by_team_comp).mark_bar().encode(
+        x=alt.X("Season:N", title="Season"),
+        y=alt.Y("CumGD:Q", title="Season Goal Differential"),
+    ).properties(width=300, height=300, title="Goal Difference By Season")
+
+    bars = total_points_bar | total_gd_bar
+
+    # ---- Render in Streamlit ----
+    st.altair_chart(bump_charts, use_container_width=True)
+    st.altair_chart(bars, use_container_width=True)
