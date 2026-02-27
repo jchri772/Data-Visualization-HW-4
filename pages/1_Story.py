@@ -85,8 +85,13 @@ def render_q2(standings_2324, standings_2425):
     attacking_charts = []
     years = ['2023-2024', '2024-2025']
     for i, df in enumerate((standings_2324, standings_2425)):
+        # Apply filter to the base so both points and line ignore "empty" grid days
         base = alt.Chart(df).transform_filter(
-            selection_q2).transform_calculate(
+            selection_q2
+        ).transform_filter(
+            # Filter for rows where a game actually occurred
+            "datum.GF != null" 
+        ).transform_calculate(
             selected_val=f"datum[stat_choice]")
 
         points = base.mark_point(filled=True, size=50).encode(
