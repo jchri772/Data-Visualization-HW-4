@@ -71,60 +71,108 @@ render(standings_2324, standings_2425)
 st.header("How consistent is a team’s attacking performance over time within a season?")
 st.subheader('Directions: Select Attacking Statistic Type At Bottom')
 def render_q2(standings_2324, standings_2425):
-    team_list = sorted(list(set(standings_2324['Team'].unique()) | set(standings_2425['Team'].unique())))
+    # 1. Title and Subtitle Setup
+    title_q2 = alt.Chart(pd.DataFrame({'text':['Q2: How consistent is a team’s attacking performance over time within a season?']})
+                        ).mark_text(align='left', fontSize=30, fontWeight='bold').encode(text='text:N').properties(height=100)
 
-    # Selectors
-    dropdown_team_q2 = alt.binding_select(options=team_list, name='Select Team: ')
-    selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team_q2, value='Arsenal')
+    subtitle_q2 = alt.Chart(pd.DataFrame({'text': ['Directions: Select Attacking Statistic Type At Bottom']})
+                        ).mark_text(align='left', fontSize=18).encode(text='text:N').properties(height=10)
+
+    header_q2 = (title_q2 & subtitle_q2).properties(spacing=2)
+
+    # 2. Selectors (Shared by both charts)
+    team_list = sorted(list(set(standings_2324['Team'].unique()) | set(standings_2425['Team'].unique())))
+    dropdown_team = alt.binding_select(options=team_list, labels=team_list, name='Select Team: ')
+    selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team, value='Arsenal', name='team_sel')
 
     attacking_stats = ['GF','Shots For','Shots on Target','Corners']
-    dropdown_stats_type = alt.binding_select(options=attacking_stats, name='Select Attacking Stat: ')
+    dropdown_stats_type = alt.binding_select(options=attacking_stats, labels=attacking_stats, name='Select Attacking Stat: ')
     selection_attack_stats = alt.param(value='GF', bind=dropdown_stats_type, name='stat_choice')
 
-    attacking_charts = []
-    years = ['2023-2024', '2024-2025']
-    dataframes = [standings_2324, standings_2425]
+    # --- CHART 1: 2023-2024 ---
+    # We filter here so 2023-24 chart doesn't see 2025 dates
+    df2324_filtered = standings_2324[standings_2324['Date'] <= '2024-06-30']
 
-    for i, df in enumerate(dataframes):
-        # FIX: Hard filter the data so 23-24 doesn't include 2025 dates
-        if i == 0:
-            seasonal_df = df[df['Date'] <= '2024-06-30']
-        else:
-            seasonal_df = df[df['Date'] >= '2024-07-01']
+    base_2324 = alt.Chart(df2324_filtered).transform_filter(
+        selection_q2
+    ).transform_calculate(
+        selected_val=f"datum[stat_choice]"
+    )
 
-        base = alt.Chart(seasonal_df).transform_filter(
-            selection_q2
-        ).transform_filter(
-            "datum.Pts != null" 
-        ).transform_calculate(
-            selected_val=f"datum[stat_choice]")
+    points_2324 = base_2324.mark_point(filled=True, size=50).encode(
+        x=alt.X('Date:T', title='Date (2023-2024)'),
+        y=alt.Y('selected_val:Q', title='Stat Value'),
+        color=alt.Color('Team:N', title='Team'),
+        tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
+    )
 
-        points = base.mark_point(filled=True, size=50).encode(
-            x=alt.X('Date:T', title='Date'),
-            y=alt.Y('selected_val:Q', title='Stat Value'),
-            color=alt.Color('Team:N'),
-            tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')])
+    line_2324 = base_2324.transform_window(
+        rolling_avg='mean(selected_val)',
+        frame=[-30, 0]
+    ).mark_line(interpolate='monotone', size=3).encode(
+        x='Date:T',
+        y=alt.Y('rolling_avg:Q'),
+        color='Team:N'
+    )
 
-        line = base.transform_window(
-            rolling_avg='mean(selected_val)',
-            frame=[-7, 0] # Changed to 7-match average for better visibility
-        ).mark_line(interpolate='monotone', size=3).encode(
-            x='Date:T',
-            y=alt.Y('rolling_avg:Q'),
-            color='Team:N')
+    chart_2324 = (line_2324 + points_2324).properties(
+        width=800, height=350,
+        title="2023-2024 Season"
+    )
 
-        combined = (line + points).add_params(selection_q2, selection_attack_stats).properties(
-            width=600, height=300,
-            title=alt.TitleParams(text=alt.ExprRef("stat_choice + ' - " + years[i] + "'"), fontSize=20))
-        
-        attacking_charts.append(combined)
-    
-    # FINAL AXIS FIX: Force independent X-axes
-    final_plot = alt.vconcat(*attacking_charts).resolve_scale(x='independent')
-    
+    # --- CHART 2: 2024-2025 ---
+    # We filter here so 2024-25 chart doesn't see 2023 dates
+    df2425_filtered = standings_2425[standings_2425['Date'] >= '2024-07-01']
+
+    base_2425 = alt.Chart(df2425_filtered).transform_filter(
+        selection_q2
+    ).transform_calculate(
+        selected_val=f"datum[stat_choice]"
+    )
+
+    points_2425 = base_2425.mark_point(filled=True, size=50).encode(
+        x=alt.X('Date:T', title='Date (2024-2025)'),
+        y=alt.Y('selected_val:Q', title='Stat Value'),
+        color=alt.Color('Team:N', title='Team'),
+        tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
+    )
+
+    line_2425 = base_2425.transform_window(
+        rolling_avg='mean(selected_val)',
+        frame=[-30, 0]
+    ).mark_line(interpolate='monotone', size=3).encode(
+        x='Date:T',
+        y=alt.Y('rolling_avg:Q'),
+        color='Team:N'
+    )
+
+    chart_2425 = (line_2425 + points_2425).properties(
+        width=800, height=350,
+        title="2024-2025 Season"
+    )
+
+    # --- FINAL ASSEMBLY ---
+    # 1. Combine the two seasons
+    seasons_vconcat = alt.vconcat(chart_2324, chart_2425).resolve_scale(
+        x='independent' # THIS PREVENTS THE SQUISHING
+    )
+
+    # 2. Add the title header and the selection parameters
+    final_plot = (header_q2 & seasons_vconcat).add_params(
+        selection_q2, 
+        selection_attack_stats
+    ).configure_title(
+        fontSize=24,
+        anchor='middle'
+    )
+
     st.altair_chart(final_plot, use_container_width=True)
-render_q2(standings_2324, standings_2425)
 
+# Calling the function using session state data
+if 'standings_2324' in st.session_state and 'standings_2425' in st.session_state:
+    render_q2(st.session_state['standings_2324'], st.session_state['standings_2425'])
+else:
+    st.warning("Please load the data on the home page first!")
 
 full_home_away = load_home_away_data()
 
