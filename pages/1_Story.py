@@ -9,7 +9,7 @@ standings_2425 = get_daily_standings(PL_2425_data)
 full_home_away = load_home_away_data()
 
 st.header("How does team performance differ between the two seasons?")
-
+st.write("First, we examine the differences in team performance across the two seasons by looking at their league position over time. The charts below show the league position of each team across each day (not matchday)for each season and thus also shows the actual amount of time that each team spent at each position. The charts are interactive, meaning that by clicking on a team, the lines for that team across both teams will be highlighted. Alternatively, you can select a team using the dropdown menu below the charts. By selecting a team, you can also see the total points and goal differential for that team across both season, allowing you as well to compare how the team's overall attacking and defensive performances differed across both seasons and translated into points.")
 
 def render(standings_2324, standings_2425):
     df1 = standings_2324
