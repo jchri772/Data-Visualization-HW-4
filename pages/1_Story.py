@@ -103,17 +103,9 @@ def render_q2(standings_2324, standings_2425):
             y=alt.Y('rolling_avg:Q'),
             color='Team:N')
 
-        combined = (line + points).resolve_scale(y='shared'
-        ).add_params(
-            selection_q2, 
-            selection_attack_stats
-        ).properties(
-            width=600, 
-            height=400,
-            title=alt.TitleParams(
-                text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average " + years[i] + "'"), 
-                fontSize=24, 
-                anchor='middle'))
+        combined = (line + points).add_params(selection_q2, selection_attack_stats).properties(
+            width=600, height=400,
+            title=alt.TitleParams(text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average " + years[i] + "'"), fontSize=24, anchor='middle'))
         attacking_charts.append(combined)
     
     q2_visuals = alt.vconcat(*attacking_charts)
