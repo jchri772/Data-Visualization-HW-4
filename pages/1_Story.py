@@ -144,7 +144,7 @@ def render_q2_separated(df1, df2):
     chart_2 = (line_2 + points_2).add_params(selection_q2, selection_attack_stats).properties(
         width=800, height=400,
         title=alt.TitleParams(text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2024-2025'"), fontSize=24)).configure_axis(
-        titlePadding=10)
+        titlePadding=40)
     
 
     st.altair_chart(chart_1, use_container_width=True)
