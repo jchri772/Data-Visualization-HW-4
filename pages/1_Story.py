@@ -43,6 +43,8 @@ def render(standings_2324, standings_2425):
         ).add_params(
             selection
         ).properties(
+            width=2000,
+            height=500,
             title=titles[i])
         charts.append(chart)
 
