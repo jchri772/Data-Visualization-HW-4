@@ -111,6 +111,8 @@ def render_q2(standings_2324, standings_2425):
         )
         attacking_charts.append(combined)
     
-    st.altair_chart(attacking_charts, use_container_width=False)
+    q2_visuals = alt.vconcat(*attacking_charts)
+    
+    st.altair_chart(q2_visuals, use_container_width=False)
 
 render_q2(standings_2324, standings_2425)
