@@ -60,12 +60,9 @@ def render(standings_2324, standings_2425):
         y=alt.Y('CumGD:Q', title="Season Cumulative Goal Differential")
     ).properties(width=400, height=400, title='Goal Difference By Season')
 
-    q1_visuals = alt.vconcat(alt.vconcat(*charts), (total_points_bar | total_gd_bar))
+    q1_visuals = alt.vconcat(
+        alt.vconcat(*charts).resolve_scale(x='independent'), 
+        (total_points_bar | total_gd_bar)
+    ).add_params(selection)
     
-    st.altair_chart(q1_visuals, use_container_width=False)
-
-PL_2324_data, PL_2425_data = load_data()
-standings_2324 = get_daily_standings(PL_2324_data)
-standings_2425 = get_daily_standings(PL_2425_data)
-
-render(standings_2324, standings_2425)
+    return q1_visuals # This is the critical change
