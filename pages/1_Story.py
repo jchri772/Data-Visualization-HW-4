@@ -70,108 +70,67 @@ render(standings_2324, standings_2425)
 
 st.header("How consistent is a team’s attacking performance over time within a season?")
 st.subheader('Directions: Select Attacking Statistic Type At Bottom')
+st.header("How does team performance differ between the two seasons?")
+
 # --- DATA LOADING ---
 PL_2324_data, PL_2425_data = load_data()
 standings_2324 = get_daily_standings(PL_2324_data)
 standings_2425 = get_daily_standings(PL_2425_data)
 
-def render_q2(standings_2324, standings_2425):
-    # Title & Subtitle for Q2
-    title_q2 = alt.Chart(pd.DataFrame({'text':['Q2: How consistent is a team’s attacking performance over time within a season?']})
-                        ).mark_text(align='left', fontSize=30, fontWeight='bold').encode(text='text:N').properties(height=100)
-
-    subtitle_q2 = alt.Chart(pd.DataFrame({'text': ['Directions: Select Attacking Statistic Type At Bottom']})
-                        ).mark_text(align='left', fontSize=18).encode(text='text:N').properties(height=10)
-
-    header_q2 = (title_q2 & subtitle_q2).properties(spacing=2)
-
-    # --- Selectors ---
-    team_list = sorted(list(set(standings_2324['Team'].unique()) | set(standings_2425['Team'].unique())))
-    dropdown_team = alt.binding_select(options=team_list, labels=team_list, name='Select Team: ')
-    selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team, value='Arsenal', name='team_sel')
+def render_q2_separated(df1, df2):
+    # --- Shared Selectors ---
+    team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
+    
+    # We define the selection params once so the dropdowns stay at the top/bottom
+    dropdown_team = alt.binding_select(options=team_list, name='Select Team: ')
+    selection_team = alt.selection_point(fields=['Team'], bind=dropdown_team, value='Arsenal', name='team_sel')
 
     attacking_stats = ['GF','Shots For','Shots on Target','Corners']
-    dropdown_stats_type = alt.binding_select(options=attacking_stats, labels=attacking_stats, name='Select Attacking Stat: ')
-    selection_attack_stats = alt.param(value='GF', bind=dropdown_stats_type, name='stat_choice')
+    dropdown_stats = alt.binding_select(options=attacking_stats, name='Select Attacking Stat: ')
+    selection_stat = alt.param(value='GF', bind=dropdown_stats, name='stat_choice')
 
-    # --- CHART 1: 2023-2024 ---
-    # Filter strictly for 23-24 dates to fix the "squished" X-axis
-    df2324_filtered = standings_2324[standings_2324['Date'] <= '2024-06-30']
-
-    base_2324 = alt.Chart(df2324_filtered).transform_filter(
-        selection_q2
+    # --- SEASON 1 CHART ---
+    df2324_filt = df1[df1['Date'] <= '2024-06-30']
+    
+    chart_2324 = alt.Chart(df2324_filt).transform_filter(
+        selection_team
     ).transform_calculate(
         selected_val=f"datum[stat_choice]"
-    )
-
-    points_2324 = base_2324.mark_point(filled=True, size=50).encode(
-        x=alt.X('Date:T', title='Date (2023-2024)'),
+    ).mark_line(point=True, interpolate='monotone', size=3).encode(
+        x=alt.X('Date:T', title='Date (2023-24)'),
         y=alt.Y('selected_val:Q', title='Stat Value'),
-        color=alt.Color('Team:N', title='Team'),
-        tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
+        color='Team:N',
+        tooltip=['Date:T', 'Team:N', 'selected_val:Q']
+    ).add_params(selection_team, selection_stat).properties(
+        width=800, height=400, title="2023-2024 Attacking Performance"
     )
 
-    line_2324 = base_2324.transform_window(
-        rolling_avg='mean(selected_val)',
-        frame=[-30, 0]
-    ).mark_line(interpolate='monotone', size=3).encode(
-        x='Date:T',
-        y=alt.Y('rolling_avg:Q'),
-        color='Team:N'
-    )
-
-    chart_2324 = (line_2324 + points_2324).properties(
-        width=800, height=400,
-        title="2023-2024 Season"
-    )
-
-    # --- CHART 2: 2024-2025 ---
-    # Filter for 24-25 dates
-    df2425_filtered = standings_2425[standings_2425['Date'] >= '2024-07-01']
-
-    base_2425 = alt.Chart(df2425_filtered).transform_filter(
-        selection_q2
+    # --- SEASON 2 CHART ---
+    df2425_filt = df2[df2['Date'] >= '2024-07-01']
+    
+    chart_2425 = alt.Chart(df2425_filt).transform_filter(
+        selection_team
     ).transform_calculate(
         selected_val=f"datum[stat_choice]"
-    )
-
-    points_2425 = base_2425.mark_point(filled=True, size=50).encode(
-        x=alt.X('Date:T', title='Date (2024-2025)'),
+    ).mark_line(point=True, interpolate='monotone', size=3).encode(
+        x=alt.X('Date:T', title='Date (2024-25)'),
         y=alt.Y('selected_val:Q', title='Stat Value'),
-        color=alt.Color('Team:N', title='Team'),
-        tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
+        color='Team:N',
+        tooltip=['Date:T', 'Team:N', 'selected_val:Q']
+    ).add_params(selection_team, selection_stat).properties(
+        width=800, height=400, title="2024-2025 Attacking Performance"
     )
 
-    line_2425 = base_2425.transform_window(
-        rolling_avg='mean(selected_val)',
-        frame=[-30, 0]
-    ).mark_line(interpolate='monotone', size=3).encode(
-        x='Date:T',
-        y=alt.Y('rolling_avg:Q'),
-        color='Team:N'
-    )
+    # --- RENDER COMPLETELY SEPARATE ---
+    # Calling st.altair_chart twice puts them in separate Streamlit blocks
+    st.altair_chart(chart_2324, use_container_width=True)
+    
+    st.write("---") # Optional visual divider
+    
+    st.altair_chart(chart_2425, use_container_width=True)
 
-    chart_2425 = (line_2425 + points_2425).properties(
-        width=800, height=400,
-        title="2024-2025 Season"
-    )
-
-    # --- ASSEMBLY ---
-    # Combine charts and ensure independent X scales
-    seasons_combined = alt.vconcat(chart_2324, chart_2425).resolve_scale(
-        x='independent'
-    )
-
-    final_layout = (header_q2 & seasons_combined).add_params(
-        selection_q2,
-        selection_attack_stats
-    )
-
-    st.altair_chart(final_layout, use_container_width=True)
-
-# Call Q2
-render_q2(standings_2324, standings_2425)
-
+# Run the separated render
+render_q2_separated(standings_2324, standings_2425)
 full_home_away = load_home_away_data()
 
 #Q3 Dropdown
