@@ -70,31 +70,30 @@ render(standings_2324, standings_2425)
 
 st.header("How consistent is a team’s attacking performance over time within a season?")
 st.subheader('Directions: Select Attacking Statistic Type At Bottom')
-def render_q2(standings_2324, standings_2425, selection_from_q1):
-    # This header mimics the text-chart style from your working version
-    st.header("How consistent is a team’s attacking performance over time within a season?")
-    st.subheader('Directions: Select Attacking Statistic Type At Bottom')
+def render_q2(standings_2324, standings_2425):
+    df1 = standings_2324
+    df2 = standings_2425
+    team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
 
-    attacking_stats = ['GF', 'Shots For', 'Shots on Target', 'Corners']
-    dropdown_stats_type = alt.binding_select(
-        options=attacking_stats, 
-        labels=attacking_stats, 
-        name='Select Attacking Stat: '
-    )
-    
-    selection_attack_stats = alt.param(
-        value='GF', 
-        bind=dropdown_stats_type, 
-        name='stat_choice'
-    )
+    # 1. Independent Team Selection
+    dropdown_team_q2 = alt.binding_select(options=team_list, labels=team_list, name='Select Team (Q2): ')
+    selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team_q2, value='Arsenal', name='team_sel_q2')
+
+    # 2. Stat Selection
+    attacking_stats = ['GF','Shots For','Shots on Target','Corners']
+    dropdown_stats_type = alt.binding_select(options=attacking_stats, labels=attacking_stats, name='Select Attacking Stat: ')
+    selection_attack_stats = alt.param(value='GF', bind=dropdown_stats_type, name='stat_choice')
 
     attacking_charts = []
     years = ['2023-2024', '2024-2025']
     
     for i, df in enumerate((standings_2324, standings_2425)):
-        # The key difference: use selection_from_q1 instead of a local selection_q2
+        # FIX A: Use transform_filter FIRST to remove the "grid" filler days.
+        # This prevents the line from calculating on non-match days.
         base = alt.Chart(df).transform_filter(
-            selection_from_q1
+            selection_q2
+        ).transform_filter(
+            "datum.GF != null" # Only actual matches
         ).transform_calculate(
             selected_val=f"datum[stat_choice]"
         )
@@ -106,7 +105,7 @@ def render_q2(standings_2324, standings_2425, selection_from_q1):
             tooltip=[
                 alt.Tooltip('Date:T', title='Date'),
                 alt.Tooltip('Team:N', title='Team'),
-                alt.Tooltip('selected_val:Q', title='Stat Value')
+                alt.Tooltip('selected_val:Q', title='Value')
             ]
         )
 
@@ -119,7 +118,11 @@ def render_q2(standings_2324, standings_2425, selection_from_q1):
             color='Team:N'
         )
 
-        combined = (line + points).add_params(
+        # FIX B: Use .resolve_scale(y='shared') to ensure the line and dots align perfectly.
+        combined = (line + points).resolve_scale(
+            y='shared'
+        ).add_params(
+            selection_q2, 
             selection_attack_stats
         ).properties(
             width=600, 
