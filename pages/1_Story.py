@@ -3,13 +3,10 @@ import pandas as pd
 import altair as alt
 from utils.data_utils import load_data, get_daily_standings
 
+st.header("Q1: How does team performance differ between the two seasons?")
 def render(standings_2324, standings_2425):
     df1 = standings_2324
     df2 = standings_2425
-
-    header_q1 = alt.Chart(pd.DataFrame({'text': ['Q1: How does team performance differ between the two seasons?']})
-                         ).mark_text(align='left', fontSize=30, fontWeight='bold',
-                         ).encode(text='text:N').properties(height=100)
 
     team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
     dropdown = alt.binding_select(options=team_list, labels=team_list, name='Select Team: ')
@@ -18,8 +15,7 @@ def render(standings_2324, standings_2425):
         fields=['Team'],
         bind=dropdown,
         on='click',
-        value='Arsenal'
-    )
+        value='Arsenal')
 
     charts = []
     titles = ["Premier League Table Bump Chart 23-24", "Premier League Table Bump Chart 24-25"]
@@ -40,8 +36,7 @@ def render(standings_2324, standings_2425):
         ).properties(
             width=2000,
             height=500,
-            title=titles[i]
-        )
+            title=titles[i])
         charts.append(chart)
 
     df1_final = df1[df1['Date'] == df1['Date'].max()].copy()
@@ -64,7 +59,7 @@ def render(standings_2324, standings_2425):
         y=alt.Y('CumGD:Q', title="Season Cumulative Goal Differential")
     ).properties(width=400, height=400, title='Goal Difference By Season')
 
-    q1_visuals = alt.vconcat(header_q1, alt.vconcat(*charts), (total_points_bar | total_gd_bar))
+    q1_visuals = alt.vconcat(alt.vconcat(*charts), (total_points_bar | total_gd_bar))
     
     st.altair_chart(q1_visuals, use_container_width=False)
 
