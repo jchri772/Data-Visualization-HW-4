@@ -14,7 +14,7 @@ st.markdown("""
     <style>
     /* Target the main container */
     .block-container {
-        max-width: 1100px;
+        max-width: 20000px;
         padding-top: 2rem;
         margin-left: auto;
         margin-right: auto;
@@ -66,7 +66,7 @@ def render(standings_2324, standings_2425):
         ).add_params(
             selection
         ).properties(
-            width=2000,
+            width=1000,
             height=500,
             title=titles[i])
         charts.append(chart)
