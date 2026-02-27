@@ -75,70 +75,46 @@ def render_q2(standings_2324, standings_2425):
     df2 = standings_2425
     team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
 
-    # 1. Independent Team Selection
     dropdown_team_q2 = alt.binding_select(options=team_list, labels=team_list, name='Select Team (Q2): ')
     selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team_q2, value='Arsenal', name='team_sel_q2')
 
-    # 2. Stat Selection
     attacking_stats = ['GF','Shots For','Shots on Target','Corners']
     dropdown_stats_type = alt.binding_select(options=attacking_stats, labels=attacking_stats, name='Select Attacking Stat: ')
     selection_attack_stats = alt.param(value='GF', bind=dropdown_stats_type, name='stat_choice')
 
     attacking_charts = []
     years = ['2023-2024', '2024-2025']
-    
     for i, df in enumerate((standings_2324, standings_2425)):
-        # FIX A: Use transform_filter FIRST to remove the "grid" filler days.
-        # This prevents the line from calculating on non-match days.
         base = alt.Chart(df).transform_filter(
             selection_q2
         ).transform_filter(
-            "datum.GF != null" # Only actual matches
+            "datum.Pts != null" 
         ).transform_calculate(
-            selected_val=f"datum[stat_choice]"
-        )
+            selected_val=f"datum[stat_choice]")
 
         points = base.mark_point(filled=True, size=50).encode(
             x=alt.X('Date:T', title='Date'),
             y=alt.Y('selected_val:Q', title='Selected Attacking Stat'),
             color=alt.Color('Team:N', title='Team'),
-            tooltip=[
-                alt.Tooltip('Date:T', title='Date'),
-                alt.Tooltip('Team:N', title='Team'),
-                alt.Tooltip('selected_val:Q', title='Value')
-            ]
-        )
+            tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')])
 
         line = base.transform_window(
             rolling_avg='mean(selected_val)',
             frame=[-30, 0]
         ).mark_line(interpolate='monotone', size=3).encode(
             x='Date:T',
-            y=alt.Y('rolling_avg:Q', title='30-Day Rolling Average'),
-            color='Team:N'
-        )
+            y=alt.Y('rolling_avg:Q'),
+            color='Team:N')
 
-        # FIX B: Use .resolve_scale(y='shared') to ensure the line and dots align perfectly.
-        combined = (line + points).resolve_scale(
-            y='shared'
-        ).add_params(
-            selection_q2, 
-            selection_attack_stats
-        ).properties(
-            width=600, 
-            height=400,
-            title=alt.TitleParams(
-                text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average " + years[i] + "'"), 
-                fontSize=24, 
-                anchor='middle'
-            )
-        )
-        
+        combined = (line + points).add_params(selection_q2, selection_attack_stats).properties(
+            width=600, height=400,
+            title=alt.TitleParams(text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average " + years[i] + "'"), fontSize=24, anchor='middle'))
         attacking_charts.append(combined)
     
     q2_visuals = alt.vconcat(*attacking_charts)
-    st.altair_chart(q2_visuals, use_container_width=False)
     
+    st.altair_chart(q2_visuals, use_container_width=False)
+
 render_q2(standings_2324, standings_2425)
 
 
