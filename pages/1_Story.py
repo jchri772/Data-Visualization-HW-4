@@ -69,21 +69,13 @@ standings_2425 = get_daily_standings(PL_2425_data)
 
 render(standings_2324, standings_2425)
 
-st.header("Q2")
+st.header("How consistent is a team’s attacking performance over time within a season?")
+st.subheader('Directions: Select Attacking Statistic Type At Bottom')
 def render_q2(standings_2324, standings_2425):
     df1 = standings_2324
     df2 = standings_2425
     team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
 
-    title_q2 = alt.Chart(pd.DataFrame({'text':['Q2: How consistent is a team’s attacking performance over time within a season?']})
-                         ).mark_text(align='left', fontSize=30, fontWeight='bold').encode(text='text:N').properties(height=100)
-
-    subtitle_q2 = alt.Chart(pd.DataFrame({'text': ['Directions: Select Attacking Statistic Type At Bottom']})
-                         ).mark_text(align='left', fontSize=18).encode(text='text:N').properties(height=10)
-
-    header_q2 = (title_q2 & subtitle_q2).properties(spacing=2)
-
-    # UNIQUE SELECTION FOR Q2
     dropdown_team_q2 = alt.binding_select(options=team_list, labels=team_list, name='Select Team (Q2): ')
     selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team_q2, value='Arsenal', name='team_sel_q2')
 
@@ -96,15 +88,13 @@ def render_q2(standings_2324, standings_2425):
     for i, df in enumerate((standings_2324, standings_2425)):
         base = alt.Chart(df).transform_filter(
             selection_q2).transform_calculate(
-            selected_val=f"datum[stat_choice]"
-            )
+            selected_val=f"datum[stat_choice]")
 
         points = base.mark_point(filled=True, size=50).encode(
             x=alt.X('Date:T', title='Date'),
             y=alt.Y('selected_val:Q', title='Selected Attacking Stat'),
             color=alt.Color('Team:N', title='Team'),
-            tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
-        )
+            tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')])
 
         line = base.transform_window(
             rolling_avg='mean(selected_val)',
@@ -121,7 +111,8 @@ def render_q2(standings_2324, standings_2425):
         )
         attacking_charts.append(combined)
 
-    st.altair_chart(alt.vconcat(header_q2, alt.hconcat(*attacking_charts)), use_container_width=False)
+    q2_visuals = alt.vconcat(header_q2, *attacking_charts)
+    
+    st.altair_chart(q2_visuals, use_container_width=False)
 
-# ADD THIS LINE to make Q2 appear
 render_q2(standings_2324, standings_2425)
