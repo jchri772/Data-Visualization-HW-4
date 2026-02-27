@@ -116,7 +116,7 @@ def render_q2(standings_2324, standings_2425):
 render_q2(standings_2324, standings_2425)
 
 
-full_home_away = home_away_stats()
+full_home_away = load_home_away_data()
 
 #Q3 Dropdown
 st.header("How does home advantage manifest across teams and seasons (pt. 1)?")

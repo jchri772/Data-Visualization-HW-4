@@ -160,3 +160,25 @@ def home_away_stats(df):
         results.append(daily)
 
     return results[0], results[1]
+
+def load_home_away_data():
+    df2324, df2425 = load_data()
+    
+    home_23, away_23 = home_away_stats(df2324)
+    home_24, away_24 = home_away_stats(df2425)
+    
+    h23_final = home_23[home_23['Date'] == home_23['Date'].max()]
+    a23_final = away_23[away_23['Date'] == away_23['Date'].max()]
+    
+    h24_final = home_24[home_24['Date'] == home_24['Date'].max()]
+    a24_final = away_24[away_24['Date'] == away_24['Date'].max()]
+
+    m23 = pd.merge(h23_final, a23_final, on='Team', suffixes=('_Home', '_Away'))
+    m23['Season'] = '2023-2024'
+    
+    m24 = pd.merge(h24_final, a24_final, on='Team', suffixes=('_Home', '_Away'))
+    m24['Season'] = '2024-2025'
+    
+    full_home_away = pd.concat([m23, m24], ignore_index=True)
+    
+    return full_home_away
