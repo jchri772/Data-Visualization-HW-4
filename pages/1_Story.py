@@ -112,7 +112,7 @@ def render_q2(standings_2324, standings_2425):
         attacking_charts.append(combined)
     
     q2_visuals = alt.vconcat(*attacking_charts).resolve_scale(
-        x='independent'  
+        x='independent' )
     
     st.altair_chart(q2_visuals, use_container_width=True)
 
