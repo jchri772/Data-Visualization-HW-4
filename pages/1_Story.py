@@ -110,8 +110,16 @@ def render_q2_separated(df1, df2):
                 color='Team:N')
 
     chart_1 = (line_1 + points_1).add_params(selection_q2, selection_attack_stats).properties(
-        width=800, height=400,
-        title=alt.TitleParams(text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2023-2024'"), fontSize=24))
+        width=800, 
+        height=400,
+        padding={"top": 20}, # Creates space between the title and the chart lines
+        title=alt.TitleParams(
+            text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2023-2024'"), 
+            fontSize=24,
+            anchor='start',
+            offset=30 # Pushes the title UP away from the data
+        )
+    )
 
     #2024-2025
     df2_sorted = df2[df2['Date'] >= '2024-07-01'].sort_values('Date')
