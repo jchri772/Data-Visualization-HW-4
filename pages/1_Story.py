@@ -144,12 +144,12 @@ def render_q2_separated(df1, df2):
     chart_1 = (line_1 + points_1).add_params(selection_q2, selection_attack_stats).properties(
         width=800, 
         height=400,
-        padding={"top": 20}, 
+        padding={"top": 50}, 
         title=alt.TitleParams(
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2023-2024'"), 
             fontSize=24,
             anchor='start',
-            offset=50))
+            offset=100))
 
     #2024-2025
     df2_sorted = df2[df2['Date'] >= '2024-07-01'].sort_values('Date')
@@ -181,12 +181,12 @@ def render_q2_separated(df1, df2):
 
     chart_2 = (line_2 + points_2).add_params(selection_q2, selection_attack_stats).properties(
         width=800, height=400,
-        padding={"top": 20}, 
+        padding={"top": 50}, 
         title=alt.TitleParams(
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2024-2025'"), 
             fontSize=24,
             anchor='start',
-            offset=50)).configure_axis(
+            offset=100)).configure_axis(
         titlePadding=40)
     
 
