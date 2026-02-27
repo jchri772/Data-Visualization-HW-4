@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 from utils.data_utils import load_data, get_daily_standings, load_home_away_data
 
-st.set_page_config(layout="")
+st.set_page_config(layout="wide")
 
 PL_2324_data, PL_2425_data = load_data()
 standings_2324 = get_daily_standings(PL_2324_data)
