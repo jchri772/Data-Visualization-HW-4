@@ -73,7 +73,6 @@ st.subheader('Directions: Select Attacking Statistic Type At Bottom')
 st.header("How does team performance differ between the two seasons?")
 
 def render_q2_separated(df1, df2):
-    # 1. Selectors (Shared by both separate charts)
     team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
     dropdown_team = alt.binding_select(options=team_list, labels=team_list, name='Select Team (Q2): ')
     selection_q2 = alt.selection_point(fields=['Team'], bind=dropdown_team, value='Arsenal', name='team_sel_q2')
@@ -82,31 +81,33 @@ def render_q2_separated(df1, df2):
     dropdown_stats_type = alt.binding_select(options=attacking_stats, labels=attacking_stats, name='Select Attacking Stat: ')
     selection_attack_stats = alt.param(value='GF', bind=dropdown_stats_type, name='stat_choice')
 
-    # --- SEASON 1: 2023-2024 ---
-    # Sort by date and filter to ensure independent axes
+    # 2023-2024 
     df1_sorted = df1[df1['Date'] <= '2024-06-30'].sort_values('Date')
     
     base_1 = alt.Chart(df1_sorted).transform_filter(
         selection_q2
     ).transform_calculate(
-        selected_val=f"datum[stat_choice]"
-    )
+        selected_val=f"datum[stat_choice]")
 
-    points_1 = base_1.mark_point(filled=True, size=50).encode(
-        x=alt.X('Date:T', title='Date (2023-24)'),
-        y=alt.Y('selected_val:Q', title='Selected Attacking Stat'),
-        color=alt.Color('Team:N', title='Team'),
-        tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
-    )
+    points_1 = base_1.mark_point(filled=True, size=50
+                                ).encode(
+            x = alt.X('Date:T', 
+                    title='Date'),
+            y = alt.Y('selected_val:Q', 
+                    title='Selected Attacking Stat'),
+            color = alt.Color('Team:N', title = 'Team'),
+            tooltip =[ alt.Tooltip('Date:T', title='Date'),
+                alt.Tooltip('Team:N', title='Team'),
+                alt.Tooltip('selected_val:Q', 
+                            title='Selected Attacking Stat')])
 
     line_1 = base_1.transform_window(
-        rolling_avg='mean(selected_val)',
-        frame=[-30, 0]
-    ).mark_line(interpolate='monotone', size=3).encode(
-        x='Date:T',
-        y=alt.Y('rolling_avg:Q'),
-        color='Team:N'
-    )
+            rolling_avg='mean(selected_val)',
+            frame=[-30, 0]
+            ).mark_line(interpolate='monotone',size = 3).encode(
+                x='Date:T',
+                y=alt.Y('rolling_avg:Q', title='30-Day Rolling Average'),
+                color='Team:N')
 
     chart_1 = (line_1 + points_1).add_params(selection_q2, selection_attack_stats).properties(
         width=800, height=400,
@@ -120,24 +121,27 @@ def render_q2_separated(df1, df2):
     base_2 = alt.Chart(df2_sorted).transform_filter(
         selection_q2
     ).transform_calculate(
-        selected_val=f"datum[stat_choice]"
-    )
+        selected_val=f"datum[stat_choice]")
 
-    points_2 = base_2.mark_point(filled=True, size=50).encode(
-        x=alt.X('Date:T', title='Date (2024-25)'),
-        y=alt.Y('selected_val:Q', title='Selected Attacking Stat'),
-        color=alt.Color('Team:N', title='Team'),
-        tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
-    )
+    points_2 = base_2.mark_point(filled=True, size=50
+                                ).encode(
+            x = alt.X('Date:T', 
+                    title='Date'),
+            y = alt.Y('selected_val:Q', 
+                    title='Selected Attacking Stat'),
+            color = alt.Color('Team:N', title = 'Team'),
+            tooltip =[ alt.Tooltip('Date:T', title='Date'),
+                alt.Tooltip('Team:N', title='Team'),
+                alt.Tooltip('selected_val:Q', 
+                            title='Selected Attacking Stat')])
 
     line_2 = base_2.transform_window(
-        rolling_avg='mean(selected_val)',
-        frame=[-30, 0]
-    ).mark_line(interpolate='monotone', size=3).encode(
-        x='Date:T',
-        y=alt.Y('rolling_avg:Q'),
-        color='Team:N'
-    )
+            rolling_avg='mean(selected_val)',
+            frame=[-30, 0]
+            ).mark_line(interpolate='monotone',size = 3).encode(
+                x='Date:T',
+                y=alt.Y('rolling_avg:Q', title='30-Day Rolling Average'),
+                color='Team:N')
 
     chart_2 = (line_2 + points_2).add_params(selection_q2, selection_attack_stats).properties(
         width=800, height=400,
