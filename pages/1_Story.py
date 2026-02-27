@@ -4,73 +4,70 @@ import altair as alt
 from utils.data_utils import load_data, get_daily_standings
 
 def render(standings_2324, standings_2425):
-    st.header("Q1: How does team performance differ between the two seasons?")
+    df1 = standings_2324
+    df2 = standings_2425
 
-    # ---- Streamlit dropdown for highlighting ----
-    team_list = sorted(set(standings_2324["Team"]) | set(standings_2425["Team"]))
-    selected_team = st.selectbox("Select Team to Highlight:", team_list, index=team_list.index("Arsenal"))
+    header_q1 = alt.Chart(pd.DataFrame({'text': ['Q1: How does team performance differ between the two seasons?']})
+                         ).mark_text(align='left', fontSize=30, fontWeight='bold',
+                         ).encode(text='text:N').properties(height=100)
 
-    titles = ["Premier League Table Bump Chart 23-24", "Premier League Table Bump Chart 24-25"]
+    team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
+    dropdown = alt.binding_select(options=team_list, labels=team_list, name='Select Team: ')
+    
+    selection = alt.selection_point(
+        fields=['Team'],
+        bind=dropdown,
+        on='click',
+        value='Arsenal'
+    )
+
     charts = []
-
-    for df, title in zip([standings_2324, standings_2425], titles):
-        # We pass the WHOLE dataframe 'df' so all lines are drawn
+    titles = ["Premier League Table Bump Chart 23-24", "Premier League Table Bump Chart 24-25"]
+    for i, df in enumerate((standings_2324, standings_2425)):
         chart = alt.Chart(df).mark_line(point=True).encode(
-            x=alt.X("Date:T", title="Day of the Season"),
-            y=alt.Y("Rank:O", title="League Rank", sort="ascending"),
-            color=alt.Color("Team:N", legend=None), # Color by team
-            # This is the secret sauce: 
-            # If the team matches the dropdown, full opacity. Otherwise, faded.
-            opacity=alt.condition(
-                alt.datum.Team == selected_team, 
-                alt.value(1.0), 
-                alt.value(0.15)
-            ),
-            # Make the selected team's line thicker
-            strokeWidth=alt.condition(
-                alt.datum.Team == selected_team, 
-                alt.value(4), 
-                alt.value(1)
-            ),
+            x=alt.X('Date:T', title='Day of the Season'),
+            y=alt.Y('Rank:O', title='League Rank', sort='ascending'),
+            color=alt.Color('Team:N', legend=alt.Legend(title='Team')),
             tooltip=[
-                alt.Tooltip("Date:T", title="Match Date"),
-                alt.Tooltip("Team:N", title="Team"),
-                alt.Tooltip("Rank:O", title="Position"),
-                alt.Tooltip("CumPts:Q", title="Total Points"),
+                alt.Tooltip('Date:T', title='Match Date'),
+                alt.Tooltip('Team:N', title='Team'),
+                alt.Tooltip('Rank:O', title='Position'),
+                alt.Tooltip('CumPts:Q', title='Total Points')
             ],
+            opacity=alt.condition(selection, alt.value(1), alt.value(0.25)),
+        ).add_params(
+            selection
         ).properties(
-            width=900,
-            height=400,
-            title=title
+            width=2000,
+            height=500,
+            title=titles[i]
         )
         charts.append(chart)
 
-    # Bump charts vertically stacked
-    st.altair_chart(alt.vconcat(*charts), use_container_width=True)
+    df1_final = df1[df1['Date'] == df1['Date'].max()].copy()
+    df2_final = df2[df2['Date'] == df2['Date'].max()].copy()
 
-    # ---- Comparison Bars (Keep these filtered to the specific team) ----
-    df1_final = standings_2324[standings_2324["Date"] == standings_2324["Date"].max()].copy()
-    df2_final = standings_2425[standings_2425["Date"] == standings_2425["Date"].max()].copy()
-    df1_final["Season"], df2_final["Season"] = "2023/2024", "2024/2025"
+    df1_final['Season'] = '2023/2024'
+    df2_final['Season'] = '2024/2025'
 
-    df_comp = pd.concat([df1_final, df2_final])
-    df_comp = df_comp[df_comp["Team"] == selected_team]
+    df_by_team_comp = pd.concat([df1_final, df2_final])
 
-    total_points_bar = alt.Chart(df_comp).mark_bar().encode(
-        x=alt.X("Season:N"),
-        y=alt.Y("CumPts:Q", title="Total Points"),
-        color="Season:N"
-    ).properties(width=300, height=300, title="Points Comparison")
+    total_points_bar = alt.Chart(df_by_team_comp).mark_bar().transform_filter(
+        selection).encode(
+        x=alt.X('Season:N', title="Season"),
+        y=alt.Y('CumPts:Q', title="Season Points Total")
+    ).properties(width=400, height=400, title='Total Points By Season')
 
-    total_gd_bar = alt.Chart(df_comp).mark_bar().encode(
-        x=alt.X("Season:N"),
-        y=alt.Y("CumGD:Q", title="Goal Differential"),
-        color="Season:N"
-    ).properties(width=300, height=300, title="GD Comparison")
+    total_gd_bar = alt.Chart(df_by_team_comp).mark_bar().transform_filter(
+        selection).encode(
+        x=alt.X('Season:N', title="Season"),
+        y=alt.Y('CumGD:Q', title="Season Cumulative Goal Differential")
+    ).properties(width=400, height=400, title='Goal Difference By Season')
 
-    st.altair_chart(total_points_bar | total_gd_bar, use_container_width=True)
+    q1_visuals = alt.vconcat(header_q1, alt.vconcat(*charts), (total_points_bar | total_gd_bar))
+    
+    st.altair_chart(q1_visuals, use_container_width=False)
 
-# --- Execution ---
 PL_2324_data, PL_2425_data = load_data()
 standings_2324 = get_daily_standings(PL_2324_data)
 standings_2425 = get_daily_standings(PL_2425_data)
