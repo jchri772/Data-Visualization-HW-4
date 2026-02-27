@@ -2,7 +2,13 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from utils.data_utils import load_data, get_daily_standings, load_home_away_data
+from charts.charts import (render)
+
 st.header("How does team performance differ between the two seasons?")
+
+st.altair_chart(render(standings_2324, standings_2425), use_container_width=True)
+
+
 def render(standings_2324, standings_2425):
     df1 = standings_2324
     df2 = standings_2425
