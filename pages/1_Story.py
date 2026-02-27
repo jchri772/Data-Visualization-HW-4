@@ -123,14 +123,5 @@ def render_q2(standings_2324, standings_2425):
 
     st.altair_chart(alt.vconcat(header_q2, alt.hconcat(*attacking_charts)), use_container_width=False)
 
-# --- EXECUTION ---
-# Load and prepare the data
-PL_2324_data, PL_2425_data = load_data()
-standings_2324 = get_daily_standings(PL_2324_data)
-standings_2425 = get_daily_standings(PL_2425_data)
-
-# Call the Q1 function (This is what you have now)
-render(standings_2324, standings_2425)
-
 # ADD THIS LINE to make Q2 appear
 render_q2(standings_2324, standings_2425)
