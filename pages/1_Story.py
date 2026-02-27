@@ -93,7 +93,7 @@ def render(standings_2324, standings_2425):
 
     q1_visuals = alt.vconcat(alt.vconcat(*charts), (total_points_bar | total_gd_bar))
     
-    st.altair_chart(q1_visuals, use_container_width=False)
+    st.altair_chart(q1_visuals, use_container_width=True)
 
 PL_2324_data, PL_2425_data = load_data()
 standings_2324 = get_daily_standings(PL_2324_data)
