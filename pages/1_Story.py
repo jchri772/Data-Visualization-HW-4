@@ -114,3 +114,86 @@ def render_q2(standings_2324, standings_2425):
     st.altair_chart(q2_visuals, use_container_width=False)
 
 render_q2(standings_2324, standings_2425)
+
+
+full_home_away = load_home_away_data()
+
+#Q3 Dropdown
+st.header("How does home advantage manifest across teams and seasons (pt. 1)?")
+st.subheader('Directions: Select team through dropdown menu')
+
+def render_q3_dropdown(full_home_away):
+    team_list = sorted(full_home_away['Team'].unique().tolist())
+    
+    selection_drop = alt.selection_point(
+        fields=['Team'],
+        bind=alt.binding_select(options=team_list, labels=team_list, name='Select Team: '),
+        value='Arsenal',
+        name='team_sel_drop'
+    )
+
+    points_home_advantage_by_team = alt.Chart(full_home_away).mark_circle(size=100).encode(
+        x=alt.X('CumPts_Home:Q', title='Home Points'),
+        y=alt.Y('CumPts_Away:Q', title='Away Points'),
+        color=alt.Color('Season:N', title='Season'),
+        opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.1)),
+        tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
+    ).properties(
+        width=600, height=600,
+        title=alt.TitleParams(
+            text='Linked Home and Away Points By Team and Season',
+            fontSize=20, anchor='middle',
+            subtitle='Home and away goals charts are linked to selection from prior parts - alternatively click below to select team:')
+    ).add_params(selection_drop)
+
+    bar_home = alt.Chart(full_home_away).mark_bar().transform_filter(selection_drop).encode(
+        x=alt.X('Season:N', title="Season"),
+        y=alt.Y('mean(CumGF_Home):Q', title="Average Home Goals"),
+        color='Season:N'
+    ).properties(width=280, height=400, title='Average Home Goals by Season')
+
+    bar_away = alt.Chart(full_home_away).mark_bar().transform_filter(selection_drop).encode(
+        x=alt.X('Season:N', title="Season"),
+        y=alt.Y('mean(CumGF_Away):Q', title="Average Away Goals"),
+        color='Season:N'
+    ).properties(width=280, height=400, title='Average Away Goals by Season')
+
+    st.altair_chart(points_home_advantage_by_team & (bar_home | bar_away), use_container_width=False)
+
+render_q3_dropdown(full_home_away)
+
+#Q3 Brush
+st.header("How does home advantage manifest across teams and seasons (pt. 2)?")
+st.subheader('Directions: Select set of team-season combinations by dragging over points in scatterplot below')
+
+def render_q3_drag(full_home_away):
+    brush = alt.selection_interval(encodings=['x', 'y'], name='drag_brush')
+
+    points_home_advantage_drag = alt.Chart(full_home_away).mark_circle(size=100).encode(
+        x=alt.X('CumPts_Home:Q', title='Home Points'),
+        y=alt.Y('CumPts_Away:Q', title='Away Points'),
+        color=alt.Color('Season:N', title='Season'),
+        tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
+    ).properties(
+        width=600, height=600,
+        title=alt.TitleParams(
+            text='Drag-To-Populate Home and Away Points By Team and Season',
+            fontSize=20, anchor='middle',
+            subtitle='Highlight over area of teams to populate average home and away goals tables below:')
+    ).add_params(brush)
+    
+    bar_home_drag = alt.Chart(full_home_away).mark_bar().transform_filter(brush).encode(
+        x=alt.X('Season:N', title="Season"),
+        y=alt.Y('mean(CumGF_Home):Q', title="Average Home Goals"),
+        color='Season:N'
+    ).properties(width=280, height=400, title='Average Home Goals by Season')
+
+    bar_away_drag = alt.Chart(full_home_away).mark_bar().transform_filter(brush).encode(
+        x=alt.X('Season:N', title="Season"),
+        y=alt.Y('mean(CumGF_Away):Q', title="Average Away Goals"),
+        color='Season:N'
+    ).properties(width=280, height=400, title='Average Away Goals by Season')
+
+    st.altair_chart(points_home_advantage_drag & (bar_home_drag | bar_away_drag), use_container_width=False)
+
+render_q3_drag(full_home_away)
