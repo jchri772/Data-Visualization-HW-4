@@ -149,7 +149,7 @@ def render_q2_separated(df1, df2):
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2023-2024'"), 
             fontSize=24,
             anchor='start',
-            offset=100))
+            offset=50))
 
     #2024-2025
     df2_sorted = df2[df2['Date'] >= '2024-07-01'].sort_values('Date')
@@ -186,7 +186,7 @@ def render_q2_separated(df1, df2):
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2024-2025'"), 
             fontSize=24,
             anchor='start',
-            offset=100)).configure_axis(
+            offset=50)).configure_axis(
         titlePadding=40)
     
 
