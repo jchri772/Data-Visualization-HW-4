@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 from utils.data_utils import load_data, get_daily_standings, load_home_away_data
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="")
 
 PL_2324_data, PL_2425_data = load_data()
 standings_2324 = get_daily_standings(PL_2324_data)
@@ -43,7 +43,6 @@ def render(standings_2324, standings_2425):
         ).add_params(
             selection
         ).properties(
-            width=900,
             height=500,
             title=titles[i])
         charts.append(chart)
@@ -80,7 +79,6 @@ render(standings_2324, standings_2425)
 
 st.header("How consistent is a team’s attacking performance over time within a season?")
 st.subheader('Directions: Select Attacking Statistic Type At Bottom')
-st.header("How does team performance differ between the two seasons?")
 
 def render_q2_separated(df1, df2):
     team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
@@ -127,7 +125,7 @@ def render_q2_separated(df1, df2):
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2023-2024'"), 
             fontSize=24,
             anchor='start',
-            offset=50))
+            offset=100))
 
     #2024-2025
     df2_sorted = df2[df2['Date'] >= '2024-07-01'].sort_values('Date')
@@ -164,7 +162,7 @@ def render_q2_separated(df1, df2):
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2024-2025'"), 
             fontSize=24,
             anchor='start',
-            offset=50)).configure_axis(
+            offset=100)).configure_axis(
         titlePadding=40)
     
 
