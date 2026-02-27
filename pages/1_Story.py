@@ -3,12 +3,35 @@ import pandas as pd
 import altair as alt
 from utils.data_utils import load_data, get_daily_standings, load_home_away_data
 
-st.set_page_config(layout="wide")
-
 PL_2324_data, PL_2425_data = load_data()
 standings_2324 = get_daily_standings(PL_2324_data)
 standings_2425 = get_daily_standings(PL_2425_data)
 full_home_away = load_home_away_data()
+
+st.set_page_config(layout="wide")
+
+st.markdown("""
+    <style>
+    /* Target the main container */
+    .block-container {
+        max-width: 1100px;
+        padding-top: 2rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Optional: Center your headers and subheaders for a cleaner look */
+    h1, h2, h3 {
+        text-align: center;
+    }
+    
+    /* Center the chart container itself */
+    .stVegaLiteChart {
+        display: flex;
+        justify-content: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 st.header("How does team performance differ between the two seasons?")
 st.write("First, we examine the differences in team performance across the two seasons by looking at their league position over time. The charts below show the league position of each team across each day (not matchday)for each season and thus also shows the actual amount of time that each team spent at each position. The charts are interactive, meaning that by clicking on a team, the lines for that team across both teams will be highlighted. Alternatively, you can select a team using the dropdown menu below the charts. By selecting a team, you can also see the total points and goal differential for that team across both season, allowing you as well to compare how the team's overall attacking and defensive performances differed across both seasons and translated into points.")
