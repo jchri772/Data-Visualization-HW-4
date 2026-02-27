@@ -83,6 +83,7 @@ def render_q2_separated(df1, df2):
     selection_attack_stats = alt.param(value='GF', bind=dropdown_stats_type, name='stat_choice')
 
     # --- SEASON 1: 2023-2024 ---
+    # Sort by date and filter to ensure independent axes
     df1_sorted = df1[df1['Date'] <= '2024-06-30'].sort_values('Date')
     
     base_1 = alt.Chart(df1_sorted).transform_filter(
@@ -92,7 +93,7 @@ def render_q2_separated(df1, df2):
     )
 
     points_1 = base_1.mark_point(filled=True, size=50).encode(
-        x=alt.X('Date:T', title='Date'),
+        x=alt.X('Date:T', title='Date (2023-24)'),
         y=alt.Y('selected_val:Q', title='Selected Attacking Stat'),
         color=alt.Color('Team:N', title='Team'),
         tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
@@ -113,6 +114,7 @@ def render_q2_separated(df1, df2):
     )
 
     # --- SEASON 2: 2024-2025 ---
+    # Filter for the second season
     df2_sorted = df2[df2['Date'] >= '2024-07-01'].sort_values('Date')
 
     base_2 = alt.Chart(df2_sorted).transform_filter(
@@ -122,7 +124,7 @@ def render_q2_separated(df1, df2):
     )
 
     points_2 = base_2.mark_point(filled=True, size=50).encode(
-        x=alt.X('Date:T', title='Date'),
+        x=alt.X('Date:T', title='Date (2024-25)'),
         y=alt.Y('selected_val:Q', title='Selected Attacking Stat'),
         color=alt.Color('Team:N', title='Team'),
         tooltip=[alt.Tooltip('Date:T'), alt.Tooltip('Team:N'), alt.Tooltip('selected_val:Q')]
@@ -144,9 +146,11 @@ def render_q2_separated(df1, df2):
 
     # --- RENDER SEPARATELY ---
     st.altair_chart(chart_1, use_container_width=True)
-    st.write("---") # Visual divider line
+    st.write("---") 
     st.altair_chart(chart_2, use_container_width=True)
 
+# CALL THE FUNCTION SO IT ACTUALLY DISPLAYS
+render_q2_separated(standings_2324, standings_2425)
 full_home_away = load_home_away_data()
 
 #Q3 Dropdown
