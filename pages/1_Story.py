@@ -46,8 +46,7 @@ total points and goal differential for that team across both seasons, allowing y
 attacking and defensive performances differed and translated into points.
 
 Teams that only show one bar in those graphs were either relegated after the 2023–2024 season or were promoted 
-for the 2024–2025 season.
-""")
+for the 2024–2025 season.""")
 
 def render(standings_2324, standings_2425):
     df1 = standings_2324
