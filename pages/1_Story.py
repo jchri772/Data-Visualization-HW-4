@@ -310,6 +310,13 @@ For example, two teams in their respective relegation seasons, Burnley in 2023-2
 
 #Q3 Brush
 st.header("How does home advantage manifest across teams and seasons (pt. 2 - Drag to Populate)?")
+
+st.write("""
+The next section of my examination of home advantage across teams features extremely similar charts to the previous section, but instead of using a dropdown menu to select a team, you can view the average home and away goals for any subset of team-seasons by dragging over the scatterplot of cumulative home and away points per season.
+Here, the bar charts display the average home and away goals across each of the selected seasons across both seasons.
+This allows you to examine how different levels of home and away points correlate with different levels of home away goals. 
+""")
+
 st.subheader('Directions: Highlight over area of teams to populate average home and away goals tables below:')
 
 def render_q3_drag(full_home_away):
@@ -339,3 +346,12 @@ def render_q3_drag(full_home_away):
     st.altair_chart(points_home_advantage_drag & (bar_home_drag | bar_away_drag), use_container_width=True)
 
 render_q3_drag(full_home_away)
+
+st.write("""
+From the charts above, we can observe that there is a significant correlation between the number of points earned at home and away with the number of goals scored at home and away.
+Additionally, on average, teams appear to score a greater number of goals at home than away.
+However, there also appears to be a significant difference in the attacking strength of all teams combined across the two seasons.
+By selecting all of the teams, you can see that the average number of home goals in the 2024-2025 season is above 34, while the average number of home goals scored in the 2023-2024 season is only about 29.
+The story is still prevelant for away form, with about a one-goal increase in the average away goals scored in the 2024-2025 season.
+This is perhaps indicative of either a systematic increase in attacking performance or talent across the league in the 2024-2025 season, or a systematic decrease in defensive performance and ability across the league in the 2024-2025 season, or perhaps a combination of the two.
+         """)
