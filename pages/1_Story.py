@@ -270,7 +270,7 @@ def render_q3_dropdown(full_home_away):
         color='Season:N'
     ).properties(width=400, height=400, title='Average Away Goals by Season')
 
-    st.altair_chart(points_home_advantage_by_team & (bar_home | bar_away), use_container_width=False)
+    st.altair_chart(points_home_advantage_by_team & (bar_home | bar_away), use_container_width=True)
 
 render_q3_dropdown(full_home_away)
 
@@ -302,6 +302,6 @@ def render_q3_drag(full_home_away):
         color='Season:N'
     ).properties(width=400, height=400, title='Average Away Goals by Season')
 
-    st.altair_chart(points_home_advantage_drag & (bar_home_drag | bar_away_drag), use_container_width=False)
+    st.altair_chart(points_home_advantage_drag & (bar_home_drag | bar_away_drag), use_container_width=True)
 
 render_q3_drag(full_home_away)
