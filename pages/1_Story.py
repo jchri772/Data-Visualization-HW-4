@@ -249,6 +249,15 @@ full_home_away = load_home_away_data()
 
 #Q3 Dropdown
 st.header("How does home advantage manifest across teams and seasons (pt. 1)?")
+
+st.write("""
+Next, I examine how home advantage manifests itself across teams in both seasons. 
+The first chart below shows the cumulative points earned at home and away for each team across both seasons, wiht the x-axis showing the cumulative points earned at home, the y-axis showing the cumulattive points earned away, and the color the points showing which season the points were earned in.
+Thus, teams in the Premier League in both seasons will have two points on the chart, on for each season.
+By selecting a team in the dropdown menu, you can see that team's points for both seasons highlighted on the chart, allowing you to compare how a team's home and away forms differed across both seasons.
+Below the scatterplot are two bar charts that show the average home and away goals per season for the selected team, allowing you to gain another perspective of the data on how a team's home and away forms differed.
+""")
+
 st.subheader('Directions: Select team through dropdown menu')
 
 def render_q3_dropdown(full_home_away):
@@ -265,7 +274,7 @@ def render_q3_dropdown(full_home_away):
         x=alt.X('CumPts_Home:Q', title='Home Points'),
         y=alt.Y('CumPts_Away:Q', title='Away Points'),
         color=alt.Color('Season:N', title='Season'),
-        opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.1)),
+        opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.5)),
         tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
     ).properties(
         width=900, height=800,
@@ -290,6 +299,14 @@ def render_q3_dropdown(full_home_away):
     st.altair_chart(points_home_advantage_by_team & (bar_home | bar_away), use_container_width=True)
 
 render_q3_dropdown(full_home_away)
+
+st.write("""
+From the charts above, we can first observe that the number of home points earned in a season is strongly correlated with the number of away points earned in a season, while the number of home goals scored in a season is also strongly correlated with the number of away goals scored in a season.
+Additionally, while not true for all teams, most gained more points at home than away and score more goals at home than away, which is consistent with the commonly held belief of home advantage in football.
+
+However, there are some teams that appear to have had better away forms than home forms across the seasons
+""")
+
 
 #Q3 Brush
 st.header("How does home advantage manifest across teams and seasons (pt. 2 - Drag to Populate)?")
