@@ -33,7 +33,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.header("How does team performance differ between the two seasons?")
+st.header("How does Premier League team performance differ between the two seasons?")
 st.write("""
 First, we examine the differences in team performance across the two seasons by looking at their league position over time. 
 The charts below show the league position of each team across each day (not matchday) for each season and thus also 
@@ -113,17 +113,13 @@ standings_2425 = get_daily_standings(PL_2425_data)
 
 render(standings_2324, standings_2425)
 
-st.write("""
-From the charts above, we can observe that there is a significant overlap between the performances of individual teams across the two seasons. 
-For example, we observe that Arsenal and Manchester City were in the top 3 at the end of both seasons and were all consistently near 
-the top for the majority of both seasons. Similarly, we can observe that numerous teams maintained positions in mid-table positions 
-across both seasons, such as Bournemouth, Brighton, and Crystal Palace. 
-
-We can also observe that the six teams relegated across both seasons (Burnley, Sheffield United, Luton Town, Southampton, Ipswich Town, 
-and Leicester) all maintained positions near the bottom of the table. Notable exceptions include Nottingham Forest (16th to 8th), 
-Everton (17th to 12th), and Tottenham, which finished 5th in 23-24 but 17th in 24-25. Tottenham in 24-25 is a prominent example 
-of a decline, starting in the top half but sliding throughout the second half of the season.
-""")
+st.write("""From the charts above, we can observe that there is a significant overlap between the performances of individual teams across the two seasons. " 
+"For example, we observe that Arsenal, Manchester City all were in the top 3 at the end of both seasons and were all consistently near the top for the majority of both seasons."  
+"Similarly, we can observe that numerous teams maintained positions in mid-table positions across both seasons, such as Bourenmouth, Brighton, and Crystal Palace. "
+"We can also observe that the six teams relegated across both seasons (Burnley, Sheffield United, Luton Town, Southampton, Ipswich Town, and Leicester) all maintained positions near the bottom of the table for near the duration of their respective seasons in which they were relegated. "
+"We do not observe many teams with significant differences in whole-season performances across both seasons, although there are a few, including Nottingham Forest, which finished the 2023-2024 season in 16th place but finished the 2024-2025 season in 8th place, Everton, which finished the 2023-2024 season in 17th place but finished the 2024-2025 season in 12th place, and Tottenham which finished the 2023-2024 season in 5th placed but finished the 2024-2025 season in 17th place. "
+"There are not many instances of extreme changes in table position within a seasons outside the first few matches, although the most prominent example of inter-season consistent performance changes appears to be Tottenham in the 2024-2025 season, which maintained spots in the top half of the table for the first half of the season but steadily declined in table position throughout the second half of the season." 
+"Overall, the charts suggest that there is a significant amount of consistency in team performance across both seasons, with most teams maintaining similar positions across both seasons and relative consistency in terms of table position within each season.""")
 
 st.header("How consistent is a team’s attacking performance over time within a season?")
 st.subheader('Directions: Select Attacking Statistic Type and Team Below')
@@ -228,7 +224,26 @@ def render_q2_separated(df1, df2):
     st.altair_chart(chart_2, use_container_width=True)
 
 render_q2_separated(standings_2324, standings_2425)
+
+st.write("""
+By examining the charts above, we can observe that many of the observations about teams' table positions made in the first section also hold for their attacking performance consistency.
+For example, we can see that Arsenal, Manchester City, and Liverpool, all had relatively strong attacking performances across both seasons, as all three teams rarely had their 30-day rolling average of goals drop below 2.0 goals per game, while the average shots per game for each team rarely went below 18 for all three teams across both seasons, which is significantly greater than the league average.
+We can also observe that changes in these attacking statistics often have material changes on league position, although changes in goals for expectadely appear to have the greatest affect on league position.
+For example, near the end of the 2023-2024 season (Februaury through April 2024), Arsenal had a nearly 100 percent increase in their 30-day rolling average of goals for (from 2 to 4 goals per game), which coincided with a rise in league position from fourth in January to first in March.
+However, this substantial increase in goals for was not entirely matched by a significant increase in shots for, which during that timeframe only increased on average from 19 to 20, and shots on target for, which during that time rose on average from 5.5 to 7.5 per game.
+The larger incrase in goals per game being correlated more with an increase in goals on target per game illustrates that an increase in the quality of chances created (proxied by shots on target) may have been more influential in Arsenal's rise to the top of the table than an increase in the quantity of chances created (which shots for can be a proxy for). 
+Arsenal's 2023-2024 rise late in the season also did not appear to be positively correlated with corner kicks, as Arsenal actually had a decrease in corners per game during that time, suggesting that an increase in corner kicks is not always correlated with an increase in chances or points.
+Since the increase in goals for was also not entirely explained by an increase in shots on target, since the increase in goals for led to a substantial increase in the standings for Arsenal during this time, this also suggests that shot efficiency plays an important role, if not a more important role, in determining a team's performance than merely the quality and quantity of chances created.
+         
+Other teams' attacking performances also appear to match with their trends in league position.
+For example, Tottenham's decline in league position during the 2024-2025 season appears to be correlated with a decline in their attacking performance, as their steady decline in league position throughout the season was matched by steady declines in goals for, shots for, shots on target for, and corners for. 
+
+""")
+
+
 full_home_away = load_home_away_data()
+
+
 
 #Q3 Dropdown
 st.header("How does home advantage manifest across teams and seasons (pt. 1)?")
@@ -251,7 +266,7 @@ def render_q3_dropdown(full_home_away):
         opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.1)),
         tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
     ).properties(
-        width=900, height=600,
+        width=900, height=800,
         title=alt.TitleParams(
             text='Linked Home and Away Points By Team and Season',
             fontSize=20, anchor='middle',
@@ -287,7 +302,7 @@ def render_q3_drag(full_home_away):
         color=alt.Color('Season:N', title='Season'),
         tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
     ).properties(
-        width=900, height=600
+        width=900, height=800
     ).add_params(brush)
     
     bar_home_drag = alt.Chart(full_home_away).mark_bar().transform_filter(brush).encode(
