@@ -113,13 +113,14 @@ standings_2425 = get_daily_standings(PL_2425_data)
 
 render(standings_2324, standings_2425)
 
-st.write("""From the charts above, we can observe that there is a significant overlap between the performances of individual teams across the two seasons. " 
-"For example, we observe that Arsenal, Manchester City all were in the top 3 at the end of both seasons and were all consistently near the top for the majority of both seasons."  
-"Similarly, we can observe that numerous teams maintained positions in mid-table positions across both seasons, such as Bourenmouth, Brighton, and Crystal Palace. "
-"We can also observe that the six teams relegated across both seasons (Burnley, Sheffield United, Luton Town, Southampton, Ipswich Town, and Leicester) all maintained positions near the bottom of the table for near the duration of their respective seasons in which they were relegated. "
-"We do not observe many teams with significant differences in whole-season performances across both seasons, although there are a few, including Nottingham Forest, which finished the 2023-2024 season in 16th place but finished the 2024-2025 season in 8th place, Everton, which finished the 2023-2024 season in 17th place but finished the 2024-2025 season in 12th place, and Tottenham which finished the 2023-2024 season in 5th placed but finished the 2024-2025 season in 17th place. "
-"There are not many instances of extreme changes in table position within a seasons outside the first few matches, although the most prominent example of inter-season consistent performance changes appears to be Tottenham in the 2024-2025 season, which maintained spots in the top half of the table for the first half of the season but steadily declined in table position throughout the second half of the season." 
-"Overall, the charts suggest that there is a significant amount of consistency in team performance across both seasons, with most teams maintaining similar positions across both seasons and relative consistency in terms of table position within each season.""")
+st.write("""From the charts above, we can observe that there is a significant overlap between the performances of individual teams across the two seasons. 
+For example, we observe that Arsenal, Manchester City all were in the top 3 at the end of both seasons and were all consistently near the top for the majority of both seasons.  
+Similarly, we can observe that numerous teams maintained positions in mid-table positions across both seasons, such as Bourenmouth, Brighton, and Crystal Palace. 
+
+We can also observe that the six teams relegated across both seasons (Burnley, Sheffield United, Luton Town, Southampton, Ipswich Town, and Leicester) all maintained positions near the bottom of the table for near the duration of their respective seasons in which they were relegated. 
+We do not observe many teams with significant differences in whole-season performances across both seasons, although there are a few, including Nottingham Forest, which finished the 2023-2024 season in 16th place but finished the 2024-2025 season in 8th place, Everton, which finished the 2023-2024 season in 17th place but finished the 2024-2025 season in 12th place, and Tottenham which finished the 2023-2024 season in 5th placed but finished the 2024-2025 season in 17th place. 
+There are not many instances of extreme changes in table position within a seasons outside the first few matches, although the most prominent example of inter-season consistent performance changes appears to be Tottenham in the 2024-2025 season, which maintained spots in the top half of the table for the first half of the season but steadily declined in table position throughout the second half of the season.
+Overall, the charts suggest that there is a significant amount of consistency in team performance across both seasons, with most teams maintaining similar positions across both seasons and relative consistency in terms of table position within each season.""")
 
 st.header("How consistent is a team’s attacking performance over time within a season?")
 st.subheader('Directions: Select Attacking Statistic Type and Team Below')
@@ -237,7 +238,8 @@ Since the increase in goals for was also not entirely explained by an increase i
          
 Other teams' attacking performances also appear to match with their trends in league position.
 For example, Tottenham's decline in league position during the 2024-2025 season appears to be correlated with a decline in their attacking performance, as their steady decline in league position throughout the season was matched by steady declines in goals for, shots for, shots on target for, and corners for. 
-
+However, not all changes in league performance appear to be entirely explained by changes in attacking performance.
+For example, Nottingham Forest's dramatic rise from 16th place in the 2023-2024 season to 8th place in the 2024-2025 season does not appear to be entirely explained by an increase in attacking performance, as their 30-day rolling average for goals for, shots for, and shots on target for were all only moderately better (about 10-20 percent better on average) in the 2024-2025 season than in their 2023-2024 season.
 """)
 
 
