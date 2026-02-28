@@ -34,7 +34,19 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 st.header("How does team performance differ between the two seasons?")
+st.write("""
+First, we examine the differences in team performance across the two seasons by looking at their league position over time. 
+The charts below show the league position of each team across each day (not matchday) for each season and thus also 
+shows the actual amount of time that each team spent at each position. The x-axis shows the day of the season, 
+while the y-axis identifies the league position that an individual team held at the end of that day.
 
+The charts are interactive, meaning that by clicking on a team, the lines for that team across both teams will be highlighted. 
+Alternatively, you can select a team using the dropdown menu below the charts. By selecting a team, you can also see the 
+total points and goal differential for that team across both seasons, allowing you to compare how the team's overall 
+attacking and defensive performances differed and translated into points.
+
+Teams that only show one bar in those graphs were either relegated after the 2023–2024 season or were promoted 
+for the 2024–2025 season.""")
 
 def render(standings_2324, standings_2425):
     df1 = standings_2324
