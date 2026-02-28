@@ -126,7 +126,16 @@ of a decline, starting in the top half but sliding throughout the second half of
 """)
 
 st.header("How consistent is a team’s attacking performance over time within a season?")
-st.subheader('Directions: Select Attacking Statistic Type At Bottom')
+st.subheader('Directions: Select Attacking Statistic Type and Team Below')
+
+st.write("""
+In this section, I examine the consistency of teams' attacking performances across the two seasons.
+The first chart shows the 30-day rolling average of an attacking performance statistic of a selected team (via the dropdown menu) across the two seasons, while the second chart shows the 30-day rolling average of the selected attackign statistic for that team across the two seasons.
+The attacking performance statistic can be selected by using the respective second dropdown menus for each chart, which inclue the following options: goals for (GF), shots taken by the selected team (Shots For), shots taken on target by the selected team (Shots on Target), and the number of corners taken by the selected team (Corners).
+The individual points for each match are also plotted on the charts, allowing you to see how each attacking performance statistic fluctuated across games, while the line represents the 30-day rolling average of that statistic, allowing you to see the overall trends in that attacking statistic across the season.
+By comparing the two charts, you can observe how the consistency of a team's attacking performance may have changed across both seasons 
+             """)
+
 
 def render_q2_separated(df1, df2):
     team_list = sorted(list(set(df1['Team'].unique()) | set(df2['Team'].unique())))
