@@ -167,7 +167,7 @@ def render_q2_separated(df1, df2):
 
     chart_1 = (line_1 + points_1).add_params(selection_q2, selection_attack_stats).properties(
         width=800, 
-        height=400,
+        height=700,
         padding={"top": 70}, 
         title=alt.TitleParams(
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2023-2024'"), 
@@ -204,7 +204,7 @@ def render_q2_separated(df1, df2):
                 color='Team:N')
 
     chart_2 = (line_2 + points_2).add_params(selection_q2, selection_attack_stats).properties(
-        width=800, height=400,
+        width=800, height=700,
         padding={"top": 70}, 
         title=alt.TitleParams(
             text=alt.ExprRef("stat_choice + ' 30-Day Rolling Average 2024-2025'"), 
@@ -214,9 +214,9 @@ def render_q2_separated(df1, df2):
         titlePadding=40)
     
 
-    st.altair_chart(chart_1, use_container_width=False)
+    st.altair_chart(chart_1, use_container_width=True)
     st.write("---") 
-    st.altair_chart(chart_2, use_container_width=False)
+    st.altair_chart(chart_2, use_container_width=True)
 
 render_q2_separated(standings_2324, standings_2425)
 full_home_away = load_home_away_data()
