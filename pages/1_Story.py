@@ -115,7 +115,7 @@ render(standings_2324, standings_2425)
 
 st.write("""From the charts above, we can observe that there is a significant overlap between the performances of individual teams across the two seasons. 
 For example, we observe that Arsenal, Manchester City all were in the top 3 at the end of both seasons and were all consistently near the top for the majority of both seasons.  
-Similarly, we can observe that numerous teams maintained positions in mid-table positions across both seasons, such as Bourenmouth, Brighton, and Crystal Palace. 
+Similarly, we can observe that numerous teams maintained positions in mid-table positions across both seasons, such as Bournemouth, Brighton, and Crystal Palace. 
 
 We can also observe that the six teams relegated across both seasons (Burnley, Sheffield United, Luton Town, Southampton, Ipswich Town, and Leicester) all maintained positions near the bottom of the table for near the duration of their respective seasons in which they were relegated. 
 We do not observe many teams with significant differences in whole-season performances across both seasons, although there are a few, including Nottingham Forest, which finished the 2023-2024 season in 16th place but finished the 2024-2025 season in 8th place, Everton, which finished the 2023-2024 season in 17th place but finished the 2024-2025 season in 12th place, and Tottenham which finished the 2023-2024 season in 5th placed but finished the 2024-2025 season in 17th place. 
@@ -127,7 +127,7 @@ st.subheader('Directions: Select Attacking Statistic Type and Team Below')
 
 st.write("""
 In this section, I examine the consistency of teams' attacking performances across the two seasons.
-The first chart shows the 30-day rolling average of an attacking performance statistic of a selected team (via the dropdown menu) across the two seasons, while the second chart shows the 30-day rolling average of the selected attackign statistic for that team across the two seasons.
+The first chart shows the 30-day rolling average of an attacking performance statistic of a selected team (via the dropdown menu) across the two seasons, while the second chart shows the 30-day rolling average of the selected attacking statistic for that team across the two seasons.
 The attacking performance statistic can be selected by using the respective second dropdown menus for each chart, which inclue the following options: goals for (GF), shots taken by the selected team (Shots For), shots taken on target by the selected team (Shots on Target), and the number of corners taken by the selected team (Corners).
 The individual points for each match are also plotted on the charts, allowing you to see how each attacking performance statistic fluctuated across games, while the line represents the 30-day rolling average of that statistic, allowing you to see the overall trends in that attacking statistic across the season.
 By comparing the two charts, you can observe how the consistency of a team's attacking performance may have changed across both seasons 
@@ -229,7 +229,7 @@ render_q2_separated(standings_2324, standings_2425)
 st.write("""
 By examining the charts above, we can observe that many of the observations about teams' table positions made in the first section also hold for their attacking performance consistency.
 For example, we can see that Arsenal, Manchester City, and Liverpool, all had relatively strong attacking performances across both seasons, as all three teams rarely had their 30-day rolling average of goals drop below 2.0 goals per game, while the average shots per game for each team rarely went below 18 for all three teams across both seasons, which is significantly greater than the league average.
-We can also observe that changes in these attacking statistics often have material changes on league position, although changes in goals for expectadely appear to have the greatest affect on league position.
+We can also observe that changes in these attacking statistics often have material changes on league position, although changes in goals for expectedly appear to have the greatest affect on league position.
 For example, near the end of the 2023-2024 season (Februaury through April 2024), Arsenal had a nearly 100 percent increase in their 30-day rolling average of goals for (from 2 to 4 goals per game), which coincided with a rise in league position from fourth in January to first in March.
 However, this substantial increase in goals for was not entirely matched by a significant increase in shots for, which during that timeframe only increased on average from 19 to 20, and shots on target for, which during that time rose on average from 5.5 to 7.5 per game.
 The larger incrase in goals per game being correlated more with an increase in goals on target per game illustrates that an increase in the quality of chances created (proxied by shots on target) may have been more influential in Arsenal's rise to the top of the table than an increase in the quantity of chances created (which shots for can be a proxy for). 
@@ -352,6 +352,6 @@ From the charts above, we can observe that there is a significant correlation be
 Additionally, on average, teams appear to score a greater number of goals at home than away.
 However, there also appears to be a significant difference in the attacking strength of all teams combined across the two seasons.
 By selecting all of the teams, you can see that the average number of home goals in the 2024-2025 season is above 34, while the average number of home goals scored in the 2023-2024 season is only about 29.
-The story is still prevelant for away form, with about a one-goal increase in the average away goals scored in the 2024-2025 season.
+The story is still prevalent for away form, with about a one-goal increase in the average away goals scored in the 2024-2025 season.
 This is perhaps indicative of either a systematic increase in attacking performance or talent across the league in the 2024-2025 season, or a systematic decrease in defensive performance and ability across the league in the 2024-2025 season, or perhaps a combination of the two.
          """)
