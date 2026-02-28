@@ -274,7 +274,7 @@ def render_q3_dropdown(full_home_away):
         x=alt.X('CumPts_Home:Q', title='Home Points'),
         y=alt.Y('CumPts_Away:Q', title='Away Points'),
         color=alt.Color('Season:N', title='Season'),
-        opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.5)),
+        opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.3)),
         tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
     ).properties(
         width=900, height=800,
@@ -303,8 +303,12 @@ render_q3_dropdown(full_home_away)
 st.write("""
 From the charts above, we can first observe that the number of home points earned in a season is strongly correlated with the number of away points earned in a season, while the number of home goals scored in a season is also strongly correlated with the number of away goals scored in a season.
 Additionally, while not true for all teams, most gained more points at home than away and score more goals at home than away, which is consistent with the commonly held belief of home advantage in football.
+The scale of home advantage however appears to differ across teams. 
+While the points and goals difference is existent but not particularly large for most teams, some teams have a larger home advantage, such as Newcastle in the 2023-2024 season, which collected 40 points at home and scored 50 goals at home but only collected 20 points away and scored only a bit more than 35 goals. 
+Additionally, in the 2023-2024 season, Liverpool had a much stronger home than away form, collecting 48 points and scoring also nearly 50 goals at home but only 34 points and scoring 37 goals away from home.         
 
-However, there are some teams that appear to have had better away forms than home forms across the seasons
+However, there are some teams that appear to have had better away forms than home forms across the seasons.
+For example, two teams in their respective relegation seasons, Burnley in 2023-2024 and Ipswich in 2024-2025, both had stronger away than home records, with Burnley taking 14 points away and 10 at home and Ipswich taking 15 points away but only 7 points at home.
 """)
 
 
