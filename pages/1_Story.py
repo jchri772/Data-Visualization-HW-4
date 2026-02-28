@@ -274,14 +274,10 @@ def render_q3_dropdown(full_home_away):
         x=alt.X('CumPts_Home:Q', title='Home Points'),
         y=alt.Y('CumPts_Away:Q', title='Away Points'),
         color=alt.Color('Season:N', title='Season'),
-        opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.3)),
+        opacity=alt.condition(selection_drop, alt.value(1), alt.value(0.2)),
         tooltip=[alt.Tooltip('Team:N'), alt.Tooltip('CumPts_Home:Q'), alt.Tooltip('CumPts_Away:Q')]
     ).properties(
         width=900, height=800,
-        title=alt.TitleParams(
-            text='Linked Home and Away Points By Team and Season',
-            fontSize=20, anchor='middle',
-            subtitle='Use dropdown below to select team:')
     ).add_params(selection_drop)
 
     bar_home = alt.Chart(full_home_away).mark_bar().transform_filter(selection_drop).encode(
